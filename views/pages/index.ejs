@@ -1,0 +1,87 @@
+<head>
+    <title> Discord Login </title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Righteous&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+</head>
+
+
+<div class="container">
+    <% if (user.data && user.guilds) { %>
+        <div class="profile">
+            <img alt src="<%= user && user.data && user.data.avatar || null %>">
+            <h1 class="name"> <%= user && user.data && user.data.tag || "NOT FOUND" %> </h1>
+        </div>
+
+    <% } %>
+
+    <a href="<%= user && user.data && user.guilds ? '/logout' : '/login' %>">
+        <div class="btn">
+            <h1> <%= user && user.data && user.guilds ? "Logout" : "Login" %></h1>
+        </div>
+    </a>
+    <% if (user.data && user.guilds) { %>
+
+        <div class="servers">
+            <% user && user.guilds ? user.guilds.sort((a, b) => a.permissions < b.permissions).map(g => createServer(g)) : false %>
+        </div>
+    <% } %>
+
+        <footer>
+            <h4>
+                <a target="_blank" href="https://github.com/Xignotic84">
+                    <i class="fas fa-code"></i>
+                    Xignotic#0001
+                </a>
+            </h4>
+            <h6>
+                Icons by <a target="_blank" href="https://icons8.com"> Icons8</a> & <a target="_blank" href="https://fontawesome.com">FontAwesome</a>
+            </h6>
+        </footer>
+
+</div>
+
+
+
+<% function createServer(serverData = false) {
+if (serverData) {
+    serverData.iconURL = `https://cdn.discordapp.com/icons/${serverData.id}/${serverData.icon}`;
+    const failedImg = 'https://img.icons8.com/cute-clipart/512/000000/questions.png';
+    let results = [];
+    let toPush = false;
+
+    let result = {
+        "VERIFIED": '<p title="Verified" class="fas fa-star"></p>',
+        "PARTNERED": '<p title="Partnered" class="fas fa-handshake"></p>',
+        "BANNER": '<p title="Banner" class="fas fa-flag"></p>',
+        "MORE_EMOJI": '<p title="More emojis" class="fas fa-smile"></p>',
+        "VANITY_URL": '<p title="Vanity URL" class="fas fa-terminal"></p>',
+        "NEWS": '<p title="News" class="far fa-newspaper"></p>',
+        "DISCOVERABLE": '<p title="Discoverable" class="fas fa-eye"></p>'
+    }
+
+    if (serverData.features && serverData.features[0]) {
+        serverData.features.map(f => {
+            if (results.includes(f)) return;
+            toPush = result[f]
+            if (toPush && toPush[0]) {
+                results.push(toPush)
+            }
+        })
+    }
+%>
+<a>
+    <div class="server" onmouseover="changeImage()">
+        <img id="img-1" class="server_icon" alt
+             src="<%= `${serverData.iconURL}.png` %>"
+             onmouseover="this.src='<%= serverData.icon ? `${serverData.iconURL}` : failedImg %>'"
+             onmouseout="this.src='<%= serverData.icon ? `${serverData.iconURL}.png` : failedImg %>'"
+             onerror="this.onerror=null;this.src='https://img.icons8.com/cute-clipart/512/000000/questions.png'">
+        <h1 class="server_name"> <%= serverData.name.length > 15 ? `${serverData.name.slice(0, 15)}...` : serverData.name %> </h1>
+        <div class="server-badges">
+            <%- results.join(' ') %>
+        </div>
+    </div>
+</a>
+<% }
+} %>
